@@ -1,5 +1,32 @@
 
+class GameBoard(object):
 
+	def __init__(self,battleships, board_width, board_height):
+		self.battleships = battleships
+		self.shots = []
+		self.board_width = board_width
+		self.board_height = board_height
+
+	# *Update Battleship with any hits
+	# *Save the fact that the shot was 
+	# a hit or miss
+	def take_shot(self, shot_location):
+		is_hit = False
+		for b in self.battleships:
+			idx = b.body_index(shot_location)
+			if idx is not None:
+				is_hit = True
+				b.hits[idx] = True
+				break
+
+		self.shots.append(Shot(shot_location, is_hit))
+
+
+class Shot(object):
+
+	def __init__(self, location, is_hit):
+		self.location = location
+		self.is_hit = is_hit
 
 class Battleship(object):
 
@@ -17,11 +44,20 @@ class Battleship(object):
 				el = (head[0] + i, head[1])
 
 			body.append(el)
+		
 		return Battleship(body)
 
 
 	def __init__(self, body):
 		self.body = body
+		# [False, False, True, False]
+		self.hits = [False] * len(body)
+
+	def body_index(self, location):
+		try:
+			return self.body.index(location)
+		except ValueError:
+			return None
 
 
 def render(board_width, board_height, shots):
@@ -83,8 +119,23 @@ if __name__ == "__main__":
 	for b in battleships:
 		print(b.body)
 
-	render_battleships(10,10, battleships)
+	game_board = GameBoard(battleships, 10, 10)
+	shots = [(1,1), (0,0), (5,7)]
+	for sh in shots:
+		game_board.take_shot(sh)
 
+
+	for sh in game_board.shots:
+		print(sh.location)
+		print(sh.is_hit)
+		print("========")
+
+	for b in game_board.battleships:
+		print(b.body)
+		print(b.hits)
+		print("========")
+
+		
 	exit(0)
 
 
