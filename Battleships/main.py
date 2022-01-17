@@ -1,3 +1,4 @@
+import copy 
 
 class GameBoard(object):
 
@@ -119,16 +120,32 @@ def render(game_board, show_battleships=False):
 
 if __name__ == "__main__":
 
+	
+
 	battleships = [
 		Battleship.build((1,1), 2, "N"),
-		#Battleship.build((5,8), 5, "N"),
-		#Battleship.build((2,3), 4, "E")
+		Battleship.build((5,8), 5, "N"),
+		Battleship.build((2,3), 4, "E")
 	]
+
+	game_boards = [
+		GameBoard(battleships, 10, 10),
+		GameBoard(copy.deepcopy(battleships), 10, 10),
+
+	]
+
+	player_names = [
+	"Frank",
+	"Alice",
+
+	]
+
+	offensive_idx = 0
 
 	#for b in battleships:
 	#	print(b.body)
 
-	game_board = GameBoard(battleships, 10, 10)
+	#game_board = GameBoard(battleships, 10, 10)
 	#shots = [(1,1), (0,0), (5,7)]
 	#for sh in shots:
 	#	game_board.take_shot(sh)
@@ -154,22 +171,28 @@ if __name__ == "__main__":
 
 
 	while True:
+		#defensive player is the non-offnesive one
+		defensive_idx = (offensive_idx + 1) % 2 
 
+		defensive_board = game_boards[defensive_idx]
+
+		print("%s YOUR TURN!" % player_names[offensive_idx])
 		inp = input("Where dof you want to shoot?\n" )
 		#TODO DEAL WITH UNVALID INPUT
 		xstr, ystr = inp.split(",")
 		x = int(xstr)
 		y = int(ystr)
 
-		game_board.take_shot((x,y))
-		render(game_board)
+		defensive_board.take_shot((x,y))
+		render(defensive_board)
 		#render(10,10,shots)
 
-		if game_board.is_game_over():
-			print("YOU WIN!")
+		if defensive_board.is_game_over():
+			print("%s WINS!" % player_names[offensive_idx])
 			break
 
-
+		#offensive olayer becomes previous defensive player
+		offensive_idx = defensive_idx
 
 		#if game_has_ended: 
 		#	print "YOU WIN"
